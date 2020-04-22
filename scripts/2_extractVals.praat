@@ -15,11 +15,11 @@
 
 # Which participant?
 form Select a participant
-	sentence fileID bi01
+	sentence fileID ne03
 endform
 
 # Where to save data
-outputDir$ = "../data/"
+outputDir$ = "/Users/jessicavarela/desktop/pa_4/data/"
 
 # Choose name for .csv file
 outFile$ = fileID$+".csv"
@@ -70,7 +70,7 @@ numberOfFiles = Get number of strings
 # Start loop ------------------------------------------------------------
 #
 
-#for file to numberOfFiles
+for file to numberOfFiles
 	select Strings dirFiles
 	fileName$ = Get string: file
 	prefix$ = fileName$ - ".wav"

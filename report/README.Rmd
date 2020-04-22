@@ -1,45 +1,51 @@
 ---
-title  : 'Programming assignment 4'
+title: "Programming Assignment 4"
 output: github_document
-
 ---
 
-**Author**: Your name here  
+**Author**: Jessica Varela 
 **Date**: Last update: `r Sys.time()`
 
 
 # Overview
 
 <!-- 
-  Talk brielfy about what you did here 
-  Describe your hypotheses
+Description
 -->
 
-Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+In this programming assignment we received data from 3 bilinguals and 2 native english speakers saying different words. I was able to segment each of the sounds, and fix the scripts to end up with 6 separate csv files that had each of the participants, f1, f2 and vot. 
+
+Given that I hypothesize that there will be differences between both groups. Native English speakers will have longer VOT, bilinguals will have shorter VOT than the native English speakers. 
 
 
 # Prep
 
+
+```{r} 
 ## Libraries
-
-```{r, 'load-libs', echo=T, warning=F, message=F}
-# Load libraries here
-
+library(tidyverse)
+library(knitr)
+library(dplyr)
 ```
 
+```{r} 
 ## Load data
+bi01 <- read_csv("../data/bi01.csv")
 
-```{r, 'load-data'}
-# You need to get all the files in the 'data' directory and combine them
-# Check previous examples we did in class (hint: the day we did the ax 
-# experiment) or search for examples of stackoverflow.com
+bi02 <- read_csv("../data/bi02.csv")
+
+bi03 <- read_csv("../data/bi03.csv")
+
+ne01 <- read_csv("../data/ne01.csv")
+
+ne02 <- read_csv("../data/ne02.csv")
+
+ne03 <- read_csv("../data/ne03.csv")
+
+data <- bind_rows(bi01, bi02, bi03, ne01, ne02, ne03)
 
 ```
+
 
 ## Tidy data
 
@@ -48,7 +54,15 @@ proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 # examples from class)
 # Create any other relevant variables here 
 
+data = separate(data = data, col = fileID, into = c("id", "word"), sep = "_")
+
+data = separate(data = data, col = word, into = c("word", "trial"), sep = "(?<=[A-Za-z])(?=[0-9])", extra = "drop", fill = "right")
+
+data = separate(data = data, col = id, into = c("group", "id"), sep = "(?<=[A-Za-z])(?=[0-9])", extra = "drop", fill = "right")
+
+glimpse(data)
 ```
+
 
 # Analysis
 
@@ -58,28 +72,52 @@ proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 # Give some descriptive summaries of your data 
 # Display your descriptives in a table
 
+table <-data %>%
+  group_by(group, word) %>%
+  summarize(meanf1 = mean(f1), sdf1 = sd(f1), meanf2 = mean(f2), sdf2 = sd(f2), meanvot = mean(vot), sdvot = sd(vot), n = n() )
+kable(table, caption = "table")
+
+table1 <-data %>%
+  group_by(group) %>%
+  summarize(mean(vot), sd(vot), n = n() ) 
+kable(table1, caption = "table1")
+
+table2 <-data %>%
+  group_by(group, word) %>%
+  summarize(mean(vot), sd(vot))
+kable(table2, caption = "table2")
 ```
 
 ## Visualization
 
 ```{r, 'plots', fig.retina=2}
 # Include some plots here
+# Plot 1
 
+ggplot(data, aes(x = group, y = vot)) +
+  geom_point(aes(color = group))
+
+# Include some plots here
+# PLot 2
+
+ggplot(data, aes(x = word, y = vot)) +
+  geom_point(aes(color = group))
 ```
 
-<!-- 
-Include a professional looking figure illustrating an example of the acoustics 
-of the production data.
-You decide what is relevant (something related to your hypothesis). 
-Think about where this file should be located in your project. 
-What location makes most sense in terms of organization? 
-How will you access the file (path) from this .Rmd file?
-If you need help consider the following sources: 
-  - Search 'Rmarkdown image' on google, stackoverflow, etc.
-  - Search the 'knitr' package help files in RStudio
-  - Search the internet for HTML code (not recommended, but it works)
-  - Check the code from my class presentations (may or may not be helpful)
--->
+For example, VOT for kaka from bilingual speakers  was .025153 or 25 ms and the figure is shown below: Visual 1
+![Visual 1](./bi01kakaimage.png){width=85%}
+
+However, the mean average VOT for kaka from native english speakers was 29.86444 ms, which was longer than the VOT from the bilingual, but not by a lot. The figure is shown below. Visual 2
+![VIsual 2](./ne02_kaka.png){width=85%}
+
+Here is another example, this word is paka, and a bilingual speaker's VOT was 7 ms. Visual 3
+
+![Visual 3](./paka_bi.png){width=85%}
+
+However, for a native english speaker for the word paka, the VOT was 12 ms, double the time of the bilingual speaker's. Visual 4
+
+![Visual 4](./paka_ne.png){width=85%}
+
 
 ## Hypothesis test
 
@@ -100,11 +138,6 @@ What did you enjoy? What did you hate? What did you learn?
 What would you do differently?
 -->
 
-Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+In conclusion, my hypothesis was correct over all. Native English speakers seem to have longer lag VOT's than bilniguals. The mean VOT for the bilingual group was 22, whereas the mean VOT for the native english group was 24. The standard deviation for the bilingual group was 15, and for the native english group it was 16. If you look at the first plot, you can see that overal the bilingual group 9 (in pink) had shorter VOTs than the native english group (in green). Referring back to the second plot, you can see how each group did with each of the words that had p,t,k stop constonants. There were a couple of outliers for the bilingual groups. This plot shows you how each group did with each word, and again, native english speakers show longer VOTs than bilinguals. 
 
-</br></br>
+This programming assignment has been the one that really made me feel like I didn't know where to start. However, it was fun having to figure out how to make a code work, researching online to make the code word, and sometimes it was just a matter of a missing comma or a misspelled word. I hated not being able to run any statistical analyses, and I would love to learn how to do this in the future becuase it is essential in research. I learned so much coding this semester and through these programming assignments. Specifically with this programming assignment I learned how to input png files in the rmarkdown, as well as creating tables and separating data. I think I would expand my hypothesis to the consonants and seek additional information regarding the separate consonants, as well as the f1 and f2.  
