@@ -11,7 +11,7 @@ Description
 -->
 In this programming assignment we received data from 3 bilinguals and 2 native english speakers saying different words. I was able to segment each of the sounds, and fix the scripts to end up with 6 separate csv files that had each of the participants, f1, f2 and vot.
 
-Given that I hypothesize that there will be differences between both groups. Native English speakers will have longer VOT, bilinguals will have shorter VOT than the native English speakers.
+Given that, I hypothesize that there will be differences between both groups. P,t,k are voiceless stop consonants, and in English, the VOTs for these consonants are usually long lag VOTs. Native English speakers will have longer VOT, bilinguals will have shorter VOTs than the native English speakers.
 
 Prep
 ====
